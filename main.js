@@ -1,4 +1,3 @@
-
 const projects = [
   {
     title: 'Project 1',
@@ -15,7 +14,7 @@ const projects = [
     imageUrl: 'https://via.placeholder.com/300',
     description: 'This is a description of project 3.'
   },
-    {
+  {
     title: 'Project 4',
     imageUrl: 'https://via.placeholder.com/300',
     description: 'This is a description of project 4.'
@@ -38,13 +37,43 @@ const modalTitle = document.getElementById('modal-title');
 const modalImage = document.getElementById('modal-image');
 const modalDescription = document.getElementById('modal-description');
 const closeButton = document.getElementsByClassName('close-button')[0];
+const themeToggle = document.getElementById('theme-toggle');
+const themeStorageKey = 'service-design-theme';
+
+const getPreferredTheme = () => {
+  const storedTheme = localStorage.getItem(themeStorageKey);
+
+  if (storedTheme === 'light' || storedTheme === 'dark') {
+    return storedTheme;
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
+
+const updateThemeToggleLabel = theme => {
+  themeToggle.textContent = theme === 'dark' ? 'White Mode' : 'Dark Mode';
+  themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+};
+
+const applyTheme = theme => {
+  document.body.dataset.theme = theme;
+  localStorage.setItem(themeStorageKey, theme);
+  updateThemeToggleLabel(theme);
+};
+
+applyTheme(getPreferredTheme());
+
+themeToggle.addEventListener('click', () => {
+  const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(nextTheme);
+});
 
 closeButton.addEventListener('click', () => {
   modal.style.display = 'none';
 });
 
-window.addEventListener('click', (event) => {
-  if (event.target == modal) {
+window.addEventListener('click', event => {
+  if (event.target === modal) {
     modal.style.display = 'none';
   }
 });
@@ -66,6 +95,7 @@ projects.forEach(project => {
   projectCard.addEventListener('click', () => {
     modalTitle.textContent = project.title;
     modalImage.src = project.imageUrl;
+    modalImage.alt = project.title;
     modalDescription.textContent = project.description;
     modal.style.display = 'block';
   });
